@@ -1,4 +1,4 @@
-import { Button, List, ListItem, TextField } from "@mui/material";
+import { Box, Button, List, ListItem, TextField } from "@mui/material";
 import "./App.css";
 // import { showTodos } from "./api/todo";
 import { useEffect, useState } from "react";
@@ -22,7 +22,6 @@ export default function App() {
           throw new Error(`resonse status ${response.status}`);
         }
         const todos: Todo[] = await response.json();
-        console.log(todos);
         setTodos(todos);
       } catch (error) {
         console.log(error);
@@ -34,6 +33,9 @@ export default function App() {
   const addTodo = async () => {
     const url = "http://localhost:3000/todo";
     try {
+      if (todo.length == 0){
+        return;
+      }
       const response = await fetch(url, {
         method: "POST",
         body: JSON.stringify({ name: todo }),
@@ -44,7 +46,6 @@ export default function App() {
         throw new Error(`resonse status ${response.status}`);
       }
       const todos: Todo[] = await response.json();
-      console.log(todos);
       setTodos(todos);
     } catch (error) {
       console.log(error);
@@ -56,20 +57,41 @@ export default function App() {
       <List>
         <h4>Todo一覧</h4>
         {todos ? (
-          <p>
+          <Box>
             {todos.map((todo) => {
-              return <ListItem key={todo.id}>{todo.name}</ListItem>;
+              return (
+                <ListItem key={todo.id}>
+                  <Box
+                    sx={{
+                      border: "1px,black,solid",
+                      width: "258px",
+                      height: "54px",
+                      padding: "4px",
+                    }}
+                  >
+                    <p>{todo.name}</p>
+                  </Box>
+                  <Button variant="outlined">編集</Button>
+                  <Button variant="outlined">削除</Button>
+                </ListItem>
+              );
             })}
-          </p>
+          </Box>
         ) : (
           <p>Todoは何もありません</p>
         )}
       </List>
       <form>
-        <TextField value={todo} onChange={(e) => setTodo(e.target.value)} />
-        <Button type="submit" onClick={addTodo}>
-          追加
-        </Button>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <TextField value={todo} onChange={(e) => setTodo(e.target.value)} />
+          <Button type="submit" onClick={addTodo} variant="contained">
+            追加
+          </Button>
+        </Box>
       </form>
     </>
   );
